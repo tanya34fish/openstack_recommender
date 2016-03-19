@@ -1,7 +1,4 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
-import simplejson
-import random
 import subprocess
 import cgi
 
@@ -15,11 +12,11 @@ class S(BaseHTTPRequestHandler):
         if self.path=='/favicon.ico':
             return
         p = self.path.split("?")
-        path = p[0][1:].split("/")
         params = {}
         if len(p) > 1:
             params = cgi.parse_qs(p[1], True, True)
         commands = ['python', 'train.py']
+        commands.append(params['data'])
         commands.append(params['model'])
         print commands
         # Train here
