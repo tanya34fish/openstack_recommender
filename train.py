@@ -72,8 +72,14 @@ def createModel(data, filename, hasRating, modeltype='default'):
 		if hasRating:
 			model = gl.popularity_recommender.create(data, target='rating')
 		else:
-			model = gl.popularity_recommender.create(data, target)
+			model = gl.popularity_recommender.create(data)
 
+	elif modeltype == 'mf':
+		if hasRating:
+			model = gl.ranking_factorization_recommender.create(data, target='rating')
+		else:
+			model = gl.ranking_factorization_recommender.create(data)
+	
 	modelname = filename + '_' + modeltype + '.model'
 	model.save(modelname)
 	shutil.make_archive(modelname, 'zip', modelname)
