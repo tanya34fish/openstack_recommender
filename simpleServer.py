@@ -1,5 +1,6 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import subprocess
+import os
 import cgi
 
 class S(BaseHTTPRequestHandler):
@@ -16,11 +17,13 @@ class S(BaseHTTPRequestHandler):
         if len(p) > 1:
             params = cgi.parse_qs(p[1], True, True)
         commands = ['python', 'train.py']
-        commands.append(params['data'])
-        commands.append(params['model'])
-        print commands
+        commands.append(params['data'][0])
+        commands.append(params['model'][0])
+        print ' '.join(commands)
         # Train here
-        subprocess.call(commands)
+        subprocess.Popen(commands)
+        self._set_headers()
+
 
 def run(server_class=HTTPServer, handler_class=S, port=80):
     server_address = ('', port)
@@ -35,3 +38,4 @@ if len(argv) == 2:
     run(port=int(argv[1]))
 else:
     run()
+
