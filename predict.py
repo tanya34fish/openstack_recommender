@@ -5,7 +5,24 @@ from swift_wrapper import upload_from_file, download
 import zipfile
 import json
 
-def predict(modelname, userList):
+def predict(modelname, jsonfile):
+	filename, file_extension = os.path.splitext(modelname)
+	fileList = filename.split('_')
+
+	zipname = modelname + '.zip'
+
+	download("models", zipname)
+	
+	zip_ref = zipfile.ZipFile(zipname, 'r')
+	zip_ref.extractall(modelname)
+	zip_ref.close()
+
+	# predict
+	# reqUserList = {"userList": ["A3SGXH7AUHU8GW"]}
+	with open(jsonfile) as data_file:
+		userDict = json.load(data_file)
+	userList = userDict['userList']
+
 	resultList = {}
 	if os.path.exists(modelname):
 		model = gl.load_model(modelname)
@@ -21,24 +38,4 @@ def predict(modelname, userList):
 		return
 
 if __name__ == "__main__":
-	#TODO how to get requested user ?
-	modelname = sys.argv[1]
-	filename, file_extension = os.path.splitext(modelname)
-	fileList = filename.split('_')
-
-	jsonfile = sys.argv[2]
-	zipname = modelname + '.zip'
-
-	download("models", zipname)
-	
-	zip_ref = zipfile.ZipFile(zipname, 'r')
-	zip_ref.extractall(modelname)
-	zip_ref.close()
-
-	# predict
-	# reqUserList = {"userList": ["A3SGXH7AUHU8GW"]}
-	with open(jsonfile) as data_file:
-		userDict = json.load(data_file)
-	#queryList = [str(v) for v in userDict['userList']]
-	resultList = predict(modelname, userDict['userList'])
-
+	predict("movie_train_default.model","query.json")
